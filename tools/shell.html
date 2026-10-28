@@ -94,23 +94,37 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border-radius: 4px; padding: 3px 6px; margin-right: 6px; display: inline-block; }
 
 .pad { display: none; justify-content: space-between; align-items: center; gap: 12px; user-select: none; -webkit-user-select: none; touch-action: none; }
-.dpad { display: grid; grid-template-columns: repeat(3, 58px); grid-template-rows: repeat(3, 52px); gap: 4px; }
+/* round thumbstick: press anywhere on it and slide */
+.stick { --size: 138px; position: relative; width: var(--size); height: var(--size); flex: none; border-radius: 50%;
+  background: radial-gradient(circle, #2f241b 0 55%, #241b14 56% 100%); border: 3px solid var(--slab-edge);
+  box-shadow: inset 0 3px 8px rgba(0,0,0,0.5); touch-action: none; -webkit-tap-highlight-color: transparent; }
+.stick .tick { position: absolute; color: var(--sand-dim); font-size: 12px; line-height: 1; pointer-events: none; }
+.stick .tick.u { top: 8px; left: 50%; transform: translateX(-50%); }
+.stick .tick.d { bottom: 8px; left: 50%; transform: translateX(-50%); }
+.stick .tick.l { left: 9px; top: 50%; transform: translateY(-50%); }
+.stick .tick.r { right: 9px; top: 50%; transform: translateY(-50%); }
+.stick .tick.on { color: var(--torch); }
+.stick .knob { position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #6a5240, #3a2a1d 70%); border: 3px solid var(--slab-edge);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5); pointer-events: none; transition: transform 0.08s ease-out; }
+.stick.active { border-color: var(--torch); }
+.stick.active .knob { transition: none; border-color: var(--torch); }
 .pad button { background: var(--slab); border: 2px solid var(--slab-edge); border-radius: 8px; font-family: var(--display); font-size: 20px;
   -webkit-tap-highlight-color: transparent; touch-action: none; }
 .pad button.down { background: var(--slab-edge); border-color: var(--torch); }
-.dpad .u { grid-area: 1 / 2; } .dpad .l { grid-area: 2 / 1; } .dpad .r { grid-area: 2 / 3; } .dpad .d { grid-area: 3 / 2; }
-.dpad .ul { grid-area: 1 / 1; } .dpad .ur { grid-area: 1 / 3; }
-.dpad .ul, .dpad .ur { font-size: 17px; color: var(--torch); }
 .card .eyebrow { font-family: var(--pixel); font-size: 9px; letter-spacing: 0.16em; color: #e6ce80; }
 .card p.hint { color: #ffffff; font-size: 16px; line-height: 1.6; text-align: left; }
 .card.intro { max-width: 420px; }
 .overlay.tap { cursor: pointer; }
 .overlay[hidden] { display: none; }
-.acts { display: grid; grid-template-columns: repeat(2, 72px); gap: 6px; }
-.acts .pick { grid-column: span 2; height: 64px; background: var(--torch); color: #2a1606; border-color: #a5621a; font-size: 20px; }
-.acts .sm { height: 44px; font-size: 16px; }
+.acts { display: grid; grid-template-columns: repeat(2, 76px); gap: 8px; align-items: end; }
+.acts button { white-space: nowrap; padding: 0 4px; }
+.acts .big { height: 76px; border-radius: 50%; font-size: 18px; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3); }
+.acts .jump { background: #5455ed; color: #ffffff; border-color: #2e30a8; transform: translateY(-14px); }
+.acts .pick { background: var(--torch); color: #2a1606; border-color: #a5621a; }
+.acts .sm { height: 40px; font-size: 14px; }
 @media (pointer: coarse), (max-width: 640px) { .pad { display: flex; } .legend.keys { display: none; } }
-@media (max-width: 400px) { .dpad { grid-template-columns: repeat(3, 50px); grid-template-rows: repeat(3, 46px); } .acts { grid-template-columns: repeat(2, 62px); } }
+@media (max-width: 400px) { .stick { --size: 122px; } .stick .knob { width: 50px; height: 50px; margin: -25px 0 0 -25px; } .acts { grid-template-columns: repeat(2, 66px); } .acts .big { height: 66px; font-size: 17px; } }
 
 .stages { background: var(--slab); border: 2px solid var(--slab-edge); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
 .stages h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 18px; color: var(--sand-dim); }
@@ -173,23 +187,20 @@ footer { color: var(--sand-dim); font-size: 13px; }
 
   <div class="below">
     <div class="pad" id="pad">
-      <div class="dpad">
-        <button class="ul" data-k="upleft" type="button" aria-label="왼쪽 위로 점프">◤</button>
-        <button class="u" data-k="up" type="button" aria-label="위">▲</button>
-        <button class="ur" data-k="upright" type="button" aria-label="오른쪽 위로 점프">◥</button>
-        <button class="l" data-k="left" type="button" aria-label="왼쪽">◀</button>
-        <button class="r" data-k="right" type="button" aria-label="오른쪽">▶</button>
-        <button class="d" data-k="down" type="button" aria-label="아래">▼</button>
+      <div class="stick" id="stick" role="group" aria-label="이동 조이스틱: 누른 채로 위아래 왼쪽 오른쪽으로 밀기">
+        <span class="tick u">▲</span><span class="tick d">▼</span><span class="tick l">◀</span><span class="tick r">▶</span>
+        <span class="knob" id="knob"></span>
       </div>
       <div class="acts">
-        <button class="pick" data-k="act" type="button">곡괭이</button>
+        <button class="big jump" data-k="up" type="button">점프</button>
+        <button class="big pick" data-k="act" type="button">곡괭이</button>
         <button class="sm" data-k="undo" type="button">되돌리기</button>
         <button class="sm" data-k="reset" type="button">다시</button>
       </div>
     </div>
     <div class="legend keys">
       <span><b>← →</b>이동 · 돌에 붙어 꾹 누르면 밀기</span>
-      <span><b>↑</b>점프·사다리</span>
+      <span><b>↑</b>점프·사다리 오르기</span>
       <span><b>↑ + ← →</b>대각선 점프 (Q / E)</span>
       <span><b>↓</b>사다리 내려가기</span>
       <span><b>↓ + SPACE</b>발밑 파기</span>
@@ -214,7 +225,7 @@ footer { color: var(--sand-dim); font-size: 13px; }
       <ol class="board-list" id="boardList"></ol>
       <p class="board-note" id="boardNote"></p>
     </section>
-    <footer>대각선 점프: ↑와 ← → 를 함께 누르거나 Q·E 키, 휴대폰은 ◤ ◥ 버튼. 발밑 파기: ↓와 곡괭이를 함께 누르기. 실수로 더는 깰 수 없게 되면 탐험가가 울어요. 규칙: 아기 새를 모두 구하면 문이 열려요. 가시와 딱정벌레는 위험해요. 받침이 부서진 돌은 잠깐 흔들리다 떨어지니 그 아래로 들어가지 마세요. 유적에는 움직이는 돌(정육면, 세로·가로 긴 돌, ㄱ자, ㄴ자)이 벽돌과 똑같은 모습으로 숨어 있어요. 어느 돌이 밀리는지는 직접 밀어 봐야 알 수 있어요. 움직이는 돌은 한 덩어리로 밀리고 떨어지며, 한 칸이라도 받쳐지면 떨어지지 않아요. 막히면 되돌리기로 한 걸음씩 돌아가세요.</footer>
+    <footer>대각선 점프: ↑와 ← → 를 함께 누르거나 Q·E 키, 휴대폰은 조이스틱을 위쪽 대각선으로 밀거나, 방향을 민 채 점프 버튼. 발밑 파기: ↓와 곡괭이를 함께 누르기. 실수로 더는 깰 수 없게 되면 탐험가가 울어요. 규칙: 아기 새를 모두 구하면 문이 열려요. 가시와 딱정벌레는 위험해요. 받침이 부서진 돌은 잠깐 흔들리다 떨어지니 그 아래로 들어가지 마세요. 유적에는 움직이는 돌(정육면, 세로·가로 긴 돌, ㄱ자, ㄴ자)이 벽돌과 똑같은 모습으로 숨어 있어요. 어느 돌이 밀리는지는 직접 밀어 봐야 알 수 있어요. 움직이는 돌은 한 덩어리로 밀리고 떨어지며, 한 칸이라도 받쳐지면 떨어지지 않아요. 막히면 되돌리기로 한 걸음씩 돌아가세요.</footer>
   </div>
 </div>
 
@@ -779,6 +790,56 @@ document.querySelectorAll(".pad button").forEach(btn => {
   btn.addEventListener("pointerup", up); btn.addEventListener("pointercancel", up); btn.addEventListener("lostpointercapture", up);
   btn.addEventListener("contextmenu", e => e.preventDefault());
 });
+
+// ---------- thumbstick ----------
+const stick = document.getElementById("stick"), knob = document.getElementById("knob");
+let stickId = null, stickDirs = [];
+function stickSet(dirs) {
+  // dirs: e.g. [LEFT], [UP, RIGHT] (diagonal jump), [DOWN]
+  const add = dirs.filter(d => !stickDirs.includes(d)), gone = stickDirs.filter(d => !dirs.includes(d));
+  gone.forEach(release);
+  if (add.includes(UP) && dirs.length === 2) pressDiag(dirs[1]);       // pushed into an upper diagonal
+  else add.forEach(press);
+  stickDirs = dirs;
+  stick.querySelectorAll(".tick").forEach(t => t.classList.toggle("on",
+    (t.classList.contains("u") && dirs.includes(UP)) || (t.classList.contains("d") && dirs.includes(DOWN)) ||
+    (t.classList.contains("l") && dirs.includes(LEFT)) || (t.classList.contains("r") && dirs.includes(RIGHT))));
+}
+function stickMove(e) {
+  const r = stick.getBoundingClientRect();
+  const R = r.width / 2, cx = r.left + R, cy = r.top + R;
+  let dx = e.clientX - cx, dy = e.clientY - cy;
+  const len = Math.hypot(dx, dy), lim = R * 0.55;
+  const kx = len > lim ? dx / len * lim : dx, ky = len > lim ? dy / len * lim : dy;
+  knob.style.transform = `translate(${kx}px, ${ky}px)`;
+  if (len < R * 0.22) return stickSet([]);                            // dead zone in the middle
+  const a = Math.atan2(-dy, dx) * 180 / Math.PI;                       // 0 = right, 90 = up
+  let dirs;
+  if (a > -30 && a <= 30) dirs = [RIGHT];
+  else if (a > 30 && a <= 62) dirs = [UP, RIGHT];
+  else if (a > 62 && a <= 118) dirs = [UP];
+  else if (a > 118 && a <= 150) dirs = [UP, LEFT];
+  else if (a > 150 || a <= -150) dirs = [LEFT];
+  else if (a > -150 && a <= -120) dirs = [LEFT];
+  else if (a > -60 && a <= -30) dirs = [RIGHT];
+  else dirs = [DOWN];
+  const same = dirs.length === stickDirs.length && dirs.every((d, i) => d === stickDirs[i]);
+  if (!same) stickSet(dirs);
+}
+function stickEnd() {
+  stickId = null; stick.classList.remove("active");
+  knob.style.transform = ""; stickSet([]);
+}
+stick.addEventListener("pointerdown", e => {
+  e.preventDefault(); audio();
+  if (mode === "intro") { closeIntro(); return; }
+  stickId = e.pointerId; stick.classList.add("active");
+  try { stick.setPointerCapture(e.pointerId); } catch (_) {}
+  stickMove(e);
+});
+stick.addEventListener("pointermove", e => { if (e.pointerId === stickId) stickMove(e); });
+["pointerup", "pointercancel", "lostpointercapture"].forEach(t => stick.addEventListener(t, e => { if (e.pointerId === stickId) stickEnd(); }));
+stick.addEventListener("contextmenu", e => e.preventDefault());
 
 // ---------- pickaxe ----------
 const SWING_MS = 300;          // one relaxed swing; mashing speeds it up to 3x
