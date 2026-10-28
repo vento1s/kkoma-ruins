@@ -16,6 +16,10 @@ function solve(map) {
   let start;
   try { start = ctx.loadLevel(0); } catch (e) { return null; }
   if (!start.p || !start.chicks.length) return null;
+  // every stone must already rest on something: no free falls the player can't react to
+  { let t = ctx.clone(start); const before = JSON.stringify(t.pieces.map(b => [b.x, b.y]));
+    for (let k = 0; k < 8; k++) t = ctx.step(t, 0);
+    if (t.dead || JSON.stringify(t.pieces.map(b => [b.x, b.y])) !== before) return null; }
   const crack = start.t.map((c, j) => c === "%" ? j : -1).filter(j => j >= 0);
   const ch = n => String.fromCharCode(48 + n);
   const key = s => {
