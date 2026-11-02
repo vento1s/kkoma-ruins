@@ -958,7 +958,7 @@ self.onmessage = (e) => {
   const key = (s) => {
     let k = ch(s.p.x) + ch(s.p.y) + (s.p.face > 0 ? 1 : 0) + s.p.jump + (s.tick % 3);
     for (const j of crack) k += s.t[j] === "%" ? 1 : 0;
-    k += s.pieces.map(b => ch(b.x) + ch(b.y) + (b.shake || 0) + (b.falling || 0)).sort().join("");
+    k += s.pieces.map(b => b.kind + ch(b.x) + ch(b.y) + (b.shake || 0) + (b.falling || 0)).sort().join("");
     for (const c of s.chicks) k += c.got ? 1 : 0;
     for (const en of s.enemies) k += en.alive ? ch(en.x) + ch(en.y) + (en.d > 0 ? 1 : 0) : "xxx";
     return k;

@@ -353,19 +353,19 @@ const LEVELS = [
  },
  {
   "name": "ㄱ자 지붕돌",
-  "hint": "ㄱ자 돌은 두 칸 넓이 구덩이를 덮을 수 있어요. 지붕(윗부분)이 앞장서게 밀어야 평평하게 들어가요. 금 간 돌을 부수는 순서도 중요해요.",
+  "hint": "┌자 돌을 밀어 넣어 좁은 구멍을 막으면 다리가 돼요. ㄱ자 돌은 지붕(윗부분)이 앞장서게 밀어야 두 칸 가시 구덩이를 평평하게 덮어요. 길을 막는 금 간 돌은 곡괭이로 부수세요.",
   "map": [
    "################",
    "# aa           #",
-   "#Pa   #C # %   #",
-   "####  ###### % #",
-   "####^^      bb #",
-   "####### #    bE#",
-   "#######H# %###%#",
-   "#     OH^^     #",
-   "#    %#H       #",
-   "# %######%######",
-   "#       C  CC# #",
+   "#Pa     %      #",
+   "##### ###### ###",
+   "####^^    bb   #",
+   "######C    b  C#",
+   "#######H  ######",
+   "#    O H^^     #",
+   "#   C%#H##     #",
+   "#%%#############",
+   "#E      C      #",
    "################"
   ]
  },
@@ -1357,7 +1357,7 @@ self.onmessage = (e) => {
   const key = (s) => {
     let k = ch(s.p.x) + ch(s.p.y) + (s.p.face > 0 ? 1 : 0) + s.p.jump + (s.tick % 3);
     for (const j of crack) k += s.t[j] === "%" ? 1 : 0;
-    k += s.pieces.map(b => ch(b.x) + ch(b.y) + (b.shake || 0) + (b.falling || 0)).sort().join("");
+    k += s.pieces.map(b => b.kind + ch(b.x) + ch(b.y) + (b.shake || 0) + (b.falling || 0)).sort().join("");
     for (const c of s.chicks) k += c.got ? 1 : 0;
     for (const en of s.enemies) k += en.alive ? ch(en.x) + ch(en.y) + (en.d > 0 ? 1 : 0) : "xxx";
     return k;

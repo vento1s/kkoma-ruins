@@ -12,6 +12,7 @@
 | `tools/shell.html` | 화면·소리·입력·UI·순위표. `/*ENGINE*/` 자리에 levels+core 가 들어감 |
 | `tools/build.py` | `python3 tools/build.py` → `index.html` 과 `tools/engine.js`(node 도구용) 생성 |
 | `tools/solve.js` | BFS 자동 풀이. `node tools/solve.js <스테이지번호-1>` (먼저 build.py 실행) |
+| `tools/solve_human.js` | 화면 조작 규칙(꾹 눌러 밀기)까지 반영한 자동 풀이. 스테이지를 바꾸면 이것으로 최종 확인 |
 | `tools/gen.js` | 스테이지를 더 어렵게 다듬는 언덕 오르기 탐색. `node tools/gen.js <idx> <초> <seed>` |
 | `config.js` | Supabase URL·anon 키 (비우면 순위표 숨김) |
 | `supabase.sql` | `scores` 테이블 + `leaderboard` 뷰 + RLS(읽기·추가만) |
@@ -42,7 +43,9 @@
 1. 시작할 때 모든 돌이 받쳐져 있어야 한다. 저절로 떨어지는 돌이 있으면 사람이 반응 못 하는 풀이가 생긴다(gen.js 가 이미 거름).
 2. `python3 tools/build.py` 후 `node tools/solve.js <idx>` 로 풀리는지 확인. 상태 수가 수백만이면 오래 걸리니 메모리 옵션
    `node --max-old-space-size=6000` 을 붙인다.
-3. 각 판의 핵심 돌(5 긴 돌, 6 ㄴ자, 7 ㄱ자 등)이 실제로 쓰이는지 본다.
+3. 각 판의 핵심 돌(5 긴 돌, 6 ㄴ자, 7 ㄱ자 등)이 실제로 쓰이는지, 정답 흐름이 안내 문구(hint)와 맞는지 본다.
+   gen.js 결과는 점수만 높고 사람이 의도를 읽을 수 없는 판이 나올 수 있다(옛 7스테이지가 그랬음). 원래 맵과 너무 다르면 버린다.
+5. 마지막으로 `node tools/solve_human.js <idx>` 로 꾹 눌러 밀기 규칙에서도 풀리는지 확인한다.
 4. 원작 게임(모아이군 등)의 캐릭터·그래픽·스테이지를 베끼지 않는다. 규칙만 참고한 독자 디자인.
 
 ## 배포
